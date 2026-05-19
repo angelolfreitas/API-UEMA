@@ -62,10 +62,7 @@ public class ContatoService {
         Optional<Contato> contato = findByEmail(email);
         if(contato.isEmpty()) return Optional.empty();
 
-        Contato contatoValue = contato.get();
-        repository.delete(contatoValue);
-
-        contatoValue = Contato.builder()
+        Contato contatoValue = Contato.builder()
                 .telefone(request.telefone())
                 .nome(request.name())
                 .email(request.email())
@@ -80,6 +77,7 @@ public class ContatoService {
 
     }
 
+    @Transactional
     public Optional<FullContactDTOResponse> patchUser(String email, Map<String, Object> fields){
         Optional<Contato> contato = findByEmail(email);
         if(contato.isEmpty()) return Optional.empty();
@@ -99,6 +97,8 @@ public class ContatoService {
                     ReflectionUtils.setField(field, contato, v);
                 }
         );
+
+        repository.save(contato);
 
         return contato.getNome();
     }
